@@ -1,3 +1,7 @@
+module.exports = {}
+module.exports.GroupedRanges = GroupedRanges
+module.exports.GroupedRanges.isValid = isValid
+
 // constraints
 // 1. all: next > previous
 // 2. last: = 100
@@ -9,7 +13,7 @@ function GroupedRanges(rangeEnds) {
     function getActiveRangeEnds() {
         return _rangeEnds
             .map((x, i) => ({ val: x, idx: i }))
-            .filter(x => x.val != null)
+            .filter(x => x.val !== null)
     }
 
     function assertIndexInRange(indexToChange) {
@@ -83,13 +87,12 @@ function GroupedRanges(rangeEnds) {
         const activeRangeEnds = getActiveRangeEnds()
         const lastActiveIndex = activeRangeEnds[activeRangeEnds.length - 1].idx
         const firstActiveIndex = activeRangeEnds[0].idx
-        const indexToChangeInActiveRange = activeRangeEnds.findIndex(x => x.idx == indexToEnable)
 
         // why are you enabling an already enabled value?
         if (_rangeEnds[indexToEnable] !== null)  return false
 
         // new last active node
-        if (indexToEnable >= lastActiveIndex) {
+        if (indexToEnable > lastActiveIndex) {
             _rangeEnds[indexToEnable] = 100
             maybeDecrementFromExclusive(indexToEnable, 5)
             return [..._rangeEnds]
@@ -104,10 +107,11 @@ function GroupedRanges(rangeEnds) {
             maybeIncrementFromExclusive(indexToEnable, 5)
             return [..._rangeEnds]
         }
-
-        const firstActiveValue = rangeEnds[firstActiveIndex]
-        const prevActiveValue = activeRangeEnds[firstActiveIndex - 1]
-        result[indexToEnable] = activeRangeEnds[indexToChangeInActiveRange + 1].val - 5
+       
+        const rightActiveAdjacentIndex = activeRangeEnds.findIndex(x => x.idx > indexToEnable)
+        _rangeEnds[indexToEnable] = activeRangeEnds[rightActiveAdjacentIndex].val - 5
+        maybeDecrementFromExclusive(indexToEnable, 1)
+        
         return [..._rangeEnds]
     }
 
@@ -193,6 +197,3 @@ function isValid(rangeEnds) {
     return invalidValues.length === 0
 }
 
-module.exports = {}
-module.exports.GroupedRanges = GroupedRanges
-module.exports.GroupedRanges.isValid = isValid

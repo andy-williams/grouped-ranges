@@ -135,5 +135,30 @@ describe('GroupedRanges', () => {
             setup([null, 1, 100])
             expect(groupedRanges.enableIndex(0)).toStrictEqual([1, 6, 100])
         })
+
+        test('enables new active start and increments adjacent nodes #2', () => {
+            setup([null, 1, 2, 3, 100])
+            expect(groupedRanges.enableIndex(0)).toStrictEqual([1, 6, 7, 8, 100])
+        })
+
+        test('enables new active start and increments adjacent nodes #3', () => {
+            setup([null, 1, null, 2, 3, 100])
+            expect(groupedRanges.enableIndex(0)).toStrictEqual([1, 6, null, 7, 8, 100])
+        })
+
+        test('enables new active middle', () => {
+            setup([10, 20, 40, null, 100])
+            expect(groupedRanges.enableIndex(3)).toStrictEqual([10, 20, 40, 95, 100])
+        })
+
+        test('enables new active middle and decrements value on the left #1', () => {
+            setup([10, 20, 99, null, 100])
+            expect(groupedRanges.enableIndex(3)).toStrictEqual([10, 20, 94, 95, 100])
+        })
+
+        test('enables new active middle and decrements value on the left #2', () => {
+            setup([10, 20, 99, null, null, 100])
+            expect(groupedRanges.enableIndex(4)).toStrictEqual([10, 20, 94, null, 95, 100])
+        })
     })
 })
